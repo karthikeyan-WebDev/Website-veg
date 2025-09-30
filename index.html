@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SS Vegetables Dindigul - Fresh Vegetables Shop Vadamaduari | Best Vegetable Shop Near Kalaimagal School</title>
+    
+    <meta name="description" content="SS Vegetables - Best fresh vegetable shop in Dindigul, Vadamaduari. Visit our shop for premium quality tomatoes, onions, potatoes, and all fresh vegetables. Located opposite Kalaimagal School.">
+    <meta name="keywords" content="SS Vegetables Dindigul, vegetables shop vadamaduari, fresh vegetables dindigul, vegetable shop near kalaimagal school, tomato onion potato dindigul, fresh vegetables shop">
+    <meta name="author" content="SS Vegetables">
+    <meta name="robots" content="index, follow">
+    
+    <!-- External CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'green-primary': '#16a34a',
+                        'orange-primary': '#ea580c',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        .vegetable-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .vegetable-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .search-highlight {
+            background-color: #fef3c7;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+        
+        .category-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .category-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Clean Modern Header -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo/Shop Name -->
+                <div class="flex items-center">
+                    <i class="fas fa-leaf text-green-600 text-xl mr-2"></i>
+                    <span id="logo-click" class="text-xl font-bold text-gray-800 cursor-pointer" onclick="logoClick()">SS Vegetables</span>
+                </div>
+                
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="#home" class="text-gray-600 hover:text-green-600 transition-colors">Home</a>
+                    <a href="#products" class="text-gray-600 hover:text-green-600 transition-colors">Products</a>
+                    <a href="#about" class="text-gray-600 hover:text-green-600 transition-colors">About</a>
+                    <a href="#contact" class="text-gray-600 hover:text-green-600 transition-colors">Contact</a>
+                </nav>
+                
+                <!-- Search and Contact Info -->
+                <div class="hidden md:flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" id="search-input" placeholder="Search vegetables..." class="pl-8 pr-4 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-green-500 w-40">
+                        <i class="fas fa-search absolute left-2.5 top-2.5 text-gray-400 text-sm"></i>
+                    </div>
+                    <!-- Contact Info -->
+                    <div class="text-sm text-gray-600">
+                        <i class="fas fa-phone text-green-600 mr-1"></i>
+                        <span class="font-medium">Call: 9876543210</span>
+                    </div>
+                    <!-- Admin Toggle Button -->
+                    <button id="admin-toggle" onclick="toggleWholesalePrices()" class="hidden bg-blue-600 text-white px-3 py-2 rounded-md hover:bg-blue-700 transition-colors text-xs" title="Double click SS Vegetables logo 3 times to enable">
+                        <i class="fas fa-chart-line text-sm mr-1"></i>
+                        <span id="wholesale-toggle-text">Show Costs</span>
+                    </button>
+                    <!-- Rate Hide Toggle -->
+                    <button id="rate-toggle" onclick="toggleRateDisplay()" class="hidden bg-red-600 text-white px-3 py-2 rounded-md hover:bg-red-700 transition-colors text-xs">
+                        <i class="fas fa-eye-slash text-sm mr-1"></i>
+                        <span id="rate-toggle-text">Hide Rates</span>
+                    </button>
+                </div>
+                
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" class="md:hidden p-2">
+                    <i class="fas fa-bars text-gray-600"></i>
+                </button>
+            </div>
+            
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden md:hidden border-t bg-white">
+                <div class="py-4 space-y-4">
+                    <a href="#home" class="block text-gray-600 hover:text-green-600">Home</a>
+                    <a href="#products" class="block text-gray-600 hover:text-green-600">Products</a>
+                    <a href="#about" class="block text-gray-600 hover:text-green-600">About</a>
+                    <a href="#contact" class="block text-gray-600 hover:text-green-600">Contact</a>
+                    <div class="pt-2 border-t">
+                        <input type="text" id="mobile-search-input" placeholder="Search vegetables..." class="w-full px-3 py-2 border rounded text-sm mb-3">
+                        <div class="text-sm text-gray-600">
+                            <div class="flex items-center mb-2">
+                                <i class="fas fa-phone text-green-600 mr-2"></i>
+                                <span class="font-medium">Call: 9876543210</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-map-marker-alt text-green-600 mr-2"></i>
+                                <span>Visit our shop in Vadamadurai</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative h-96 bg-gradient-to-r from-green-600 to-green-800">
+        <div class="absolute inset-0">
+            <img src="https://images.unsplash.com/photo-1566385101042-1a0aa0c1268c?w=1920&h=800&fit=crop&q=80" alt="Fresh Vegetables" class="w-full h-full object-cover opacity-30">
+        </div>
+        <div class="relative z-10 flex items-center justify-center h-full text-center">
+            <div class="max-w-4xl mx-auto px-4">
+                <h1 class="text-4xl md:text-6xl font-bold text-white mb-4">Fresh Vegetables Daily</h1>
+                <p class="text-xl md:text-2xl text-white mb-8">Visit SS Vegetables in Vadamadurai for the freshest produce</p>
+                <button onclick="document.getElementById('products').scrollIntoView({behavior: 'smooth'})" class="bg-white text-green-700 font-semibold py-3 px-8 rounded-lg hover:bg-gray-100 transition-colors">
+                    Shop Now
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="text-center p-6">
+                    <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-store text-green-primary text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Visit Our Shop</h3>
+                    <p class="text-gray-600">Come to our shop and personally select fresh vegetables</p>
+                </div>
+                <div class="text-center p-6">
+                    <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-leaf text-green-primary text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">100% Fresh</h3>
+                    <p class="text-gray-600">All our vegetables are fresh and of premium quality</p>
+                </div>
+                <div class="text-center p-6">
+                    <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-rupee-sign text-green-primary text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Best Prices</h3>
+                    <p class="text-gray-600">Competitive prices with no middleman markup</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Fresh Vegetables</h2>
+                <div class="flex items-center justify-center space-x-2 text-green-600">
+                    <i class="fas fa-sync-alt"></i>
+                    <span class="text-sm font-medium" id="price-update-info">Daily rates based on Ottanchatiram wholesale market</span>
+                </div>
+                <div class="text-xs text-gray-500 mt-1" id="last-update-time">
+                    Market prices from Ottanchatiram, Dindigul • Updated: <span id="update-timestamp">Loading...</span>
+                </div>
+            </div>
+            
+            <!-- Category Filter Buttons -->
+            <div class="flex flex-wrap justify-center gap-2 mb-8">
+                <button class="category-btn active bg-green-primary text-white px-4 py-2 rounded-lg text-sm" data-category="all" onclick="smoothScrollToProducts()">All Vegetables</button>
+                <button class="category-btn bg-white text-gray-700 border px-4 py-2 rounded-lg text-sm hover:bg-gray-50" data-category="leafy" onclick="smoothScrollToProducts()">Leafy</button>
+                <button class="category-btn bg-white text-gray-700 border px-4 py-2 rounded-lg text-sm hover:bg-gray-50" data-category="root" onclick="smoothScrollToProducts()">Root</button>
+                <button class="category-btn bg-white text-gray-700 border px-4 py-2 rounded-lg text-sm hover:bg-gray-50" data-category="fruit-vegetable" onclick="smoothScrollToProducts()">Fruit Vegetables</button>
+                <button class="category-btn bg-white text-gray-700 border px-4 py-2 rounded-lg text-sm hover:bg-gray-50" data-category="cruciferous" onclick="smoothScrollToProducts()">Cruciferous</button>
+            </div>
+            
+            <!-- Products Grid -->
+            <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Products will be loaded here by JavaScript -->
+                <div id="loading-indicator" class="col-span-full text-center py-8">
+                    <i class="fas fa-spinner fa-spin text-green-primary text-2xl"></i>
+                    <p class="text-gray-600 mt-2">Loading fresh vegetables...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="max-w-4xl mx-auto text-center">
+                <h2 class="text-3xl md:text-4xl font-bold mb-8">About SS Vegetables</h2>
+                <p class="text-lg text-gray-600 mb-8">
+                    We are a family-owned vegetable shop dedicated to providing the freshest, highest-quality vegetables to our community in Dindigul. 
+                    With over 20 years of experience, we work directly with local farmers to ensure you get the best produce at affordable prices.
+                    Located conveniently at Kalaimagal School Opp, Vadamaduari, visit our shop to personally select your fresh vegetables.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Customer Testimonials Section -->
+    <section class="py-16 bg-green-50" aria-labelledby="testimonials-title">
+        <div class="container mx-auto px-4">
+            <h2 id="testimonials-title" class="text-3xl md:text-4xl font-bold text-center mb-12">What Our Customers Say</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <div class="bg-white p-6 rounded-lg shadow-lg fade-in">
+                    <div class="flex items-center mb-4">
+                        <div class="flex text-yellow-400">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-4">"SS Vegetables always provides the freshest vegetables in Dindigul. Their quality is consistently excellent and prices are very reasonable."</p>
+                    <div class="font-semibold">- Priya Krishnan</div>
+                    <div class="text-sm text-gray-500">Regular Customer</div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg fade-in">
+                    <div class="flex items-center mb-4">
+                        <div class="flex text-yellow-400">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-4">"Best quality vegetables at reasonable prices. I've been shopping here for 5 years and never disappointed with their service."</p>
+                    <div class="font-semibold">- Rajesh Kumar</div>
+                    <div class="text-sm text-gray-500">Vadamaduari Resident</div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg fade-in">
+                    <div class="flex items-center mb-4">
+                        <div class="flex text-yellow-400">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-4">"Fresh vegetables are hard to find, but SS Vegetables always has the best selection. Staff is very helpful and knowledgeable."</p>
+                    <div class="font-semibold">- Meera Subramanian</div>
+                    <div class="text-sm text-gray-500">Health Enthusiast</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Us Section -->
+    <section class="py-16 bg-white" aria-labelledby="why-choose-title">
+        <div class="container mx-auto px-4">
+            <h2 id="why-choose-title" class="text-3xl md:text-4xl font-bold text-center mb-12">Why Choose SS Vegetables?</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="text-center fade-in">
+                    <div class="bg-green-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-seedling text-green-primary text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Farm Fresh</h3>
+                    <p class="text-gray-600">Direct from local farms in Tamil Nadu, ensuring maximum freshness and nutrition daily.</p>
+                </div>
+                <div class="text-center fade-in">
+                    <div class="bg-green-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-rupee-sign text-green-primary text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Best Prices</h3>
+                    <p class="text-gray-600">Competitive pricing with no middleman markup. Direct farmer-to-customer benefits.</p>
+                </div>
+                <div class="text-center fade-in">
+                    <div class="bg-green-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-shopping-basket text-green-primary text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Personal Selection</h3>
+                    <p class="text-gray-600">Visit our shop to personally select and inspect vegetables before purchasing.</p>
+                </div>
+                <div class="text-center fade-in">
+                    <div class="bg-green-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-award text-green-primary text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Quality Assured</h3>
+                    <p class="text-gray-600">Hand-picked vegetables with quality guarantee and 100% satisfaction promise.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="py-16 bg-gray-50" aria-labelledby="faq-title">
+        <div class="container mx-auto px-4">
+            <h2 id="faq-title" class="text-3xl md:text-4xl font-bold text-center mb-12">Frequently Asked Questions</h2>
+            <div class="max-w-4xl mx-auto space-y-6">
+                <div class="bg-white rounded-lg shadow-lg p-6 fade-in">
+                    <button class="faq-button w-full text-left flex justify-between items-center font-semibold text-lg" onclick="toggleFAQ(1)">
+                        <span>What are your shop timings?</span>
+                        <i class="fas fa-chevron-down transform transition-transform duration-200" id="faq-icon-1"></i>
+                    </button>
+                    <div class="faq-content hidden mt-4 text-gray-600" id="faq-content-1">
+                        <p>We are open Monday to Saturday from 8:00 AM to 8:00 PM, and Sundays from 9:00 AM to 6:00 PM. Visit us at Kalaimagal School Opp, Vadamaduari, Dindigul.</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-6 fade-in">
+                    <button class="faq-button w-full text-left flex justify-between items-center font-semibold text-lg" onclick="toggleFAQ(2)">
+                        <span>Are your vegetables really fresh?</span>
+                        <i class="fas fa-chevron-down transform transition-transform duration-200" id="faq-icon-2"></i>
+                    </button>
+                    <div class="faq-content hidden mt-4 text-gray-600" id="faq-content-2">
+                        <p>Yes, we source our vegetables directly from local farms in Tamil Nadu. We receive fresh stock daily and maintain strict quality control.</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-6 fade-in">
+                    <button class="faq-button w-full text-left flex justify-between items-center font-semibold text-lg" onclick="toggleFAQ(3)">
+                        <span>What payment methods do you accept?</span>
+                        <i class="fas fa-chevron-down transform transition-transform duration-200" id="faq-icon-3"></i>
+                    </button>
+                    <div class="faq-content hidden mt-4 text-gray-600" id="faq-content-3">
+                        <p>We accept cash payments and UPI payments (PhonePe, Google Pay, Paytm). All major UPI apps are supported for your convenience.</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-6 fade-in">
+                    <button class="faq-button w-full text-left flex justify-between items-center font-semibold text-lg" onclick="toggleFAQ(4)">
+                        <span>Do you offer any discounts for bulk purchases?</span>
+                        <i class="fas fa-chevron-down transform transition-transform duration-200" id="faq-icon-4"></i>
+                    </button>
+                    <div class="faq-content hidden mt-4 text-gray-600" id="faq-content-4">
+                        <p>Yes, we offer special prices for bulk purchases. Please speak with our staff for bulk pricing on quantities over 10kg of any vegetable.</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-6 fade-in">
+                    <button class="faq-button w-full text-left flex justify-between items-center font-semibold text-lg" onclick="toggleFAQ(5)">
+                        <span>Can I get nutritional advice for vegetables?</span>
+                        <i class="fas fa-chevron-down transform transition-transform duration-200" id="faq-icon-5"></i>
+                    </button>
+                    <div class="faq-content hidden mt-4 text-gray-600" id="faq-content-5">
+                        <p>Absolutely! Our knowledgeable staff can provide information about nutritional benefits and cooking suggestions for all our vegetables.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-16 bg-green-primary text-white" aria-labelledby="contact-title">
+        <div class="container mx-auto px-4">
+            <h2 id="contact-title" class="text-3xl md:text-4xl font-bold text-center mb-12">Visit Our Store</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <!-- Store Information -->
+                <div class="fade-in">
+                    <div class="bg-white bg-opacity-10 rounded-lg p-8">
+                        <h3 class="text-2xl font-semibold mb-6">SS Vegetables</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <i class="fas fa-map-marker-alt text-xl mr-4 mt-1 text-orange-primary"></i>
+                                <div>
+                                    <h4 class="font-semibold mb-1">Location</h4>
+                                    <p>Kalaimagal School Opp,<br>Vadamaduari, Dindigul - 624003<br>Tamil Nadu, India</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-clock text-xl mr-4 mt-1 text-orange-primary"></i>
+                                <div>
+                                    <h4 class="font-semibold mb-1">Store Hours</h4>
+                                    <div class="space-y-1">
+                                        <p>Monday - Saturday: 8:00 AM - 8:00 PM</p>
+                                        <p>Sunday: 9:00 AM - 6:00 PM</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-phone text-xl mr-4 mt-1 text-orange-primary"></i>
+                                <div>
+                                    <h4 class="font-semibold mb-1">Contact</h4>
+                                    <p>Call us for fresh stock updates</p>
+                                    <p class="text-orange-primary font-semibold">+91 9876543210</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-credit-card text-xl mr-4 mt-1 text-orange-primary"></i>
+                                <div>
+                                    <h4 class="font-semibold mb-1">Payment Options</h4>
+                                    <p>Cash • UPI • PhonePe • Google Pay • Paytm</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inquiry Form -->
+                <div class="fade-in">
+                    <div class="bg-white bg-opacity-10 rounded-lg p-8">
+                        <h3 class="text-2xl font-semibold mb-6">Send us a Message</h3>
+                        <form class="space-y-6" onsubmit="submitInquiry(event)">
+                            <div>
+                                <label for="name" class="block text-sm font-medium mb-2">Your Name</label>
+                                <input type="text" id="name" name="name" required 
+                                       class="w-full px-4 py-3 rounded-lg bg-white bg-opacity-20 border border-white border-opacity-30 text-white placeholder-white placeholder-opacity-70 focus:outline-none focus:ring-2 focus:ring-orange-primary focus:border-transparent"
+                                       placeholder="Enter your full name">
+                            </div>
+                            <div>
+                                <label for="phone" class="block text-sm font-medium mb-2">Phone Number</label>
+                                <input type="tel" id="phone" name="phone" required 
+                                       class="w-full px-4 py-3 rounded-lg bg-white bg-opacity-20 border border-white border-opacity-30 text-white placeholder-white placeholder-opacity-70 focus:outline-none focus:ring-2 focus:ring-orange-primary focus:border-transparent"
+                                       placeholder="Enter your phone number">
+                            </div>
+                            <div>
+                                <label for="inquiry-type" class="block text-sm font-medium mb-2">Inquiry Type</label>
+                                <select id="inquiry-type" name="inquiry-type" required 
+                                        class="w-full px-4 py-3 rounded-lg bg-white bg-opacity-20 border border-white border-opacity-30 text-white focus:outline-none focus:ring-2 focus:ring-orange-primary focus:border-transparent">
+                                    <option value="" class="text-gray-800">Select inquiry type</option>
+                                    <option value="bulk-order" class="text-gray-800">Bulk Order Inquiry</option>
+                                    <option value="fresh-stock" class="text-gray-800">Fresh Stock Information</option>
+                                    <option value="pricing" class="text-gray-800">Pricing Information</option>
+                                    <option value="special-request" class="text-gray-800">Special Vegetable Request</option>
+                                    <option value="feedback" class="text-gray-800">Feedback</option>
+                                    <option value="other" class="text-gray-800">Other</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="message" class="block text-sm font-medium mb-2">Message</label>
+                                <textarea id="message" name="message" rows="4" required 
+                                          class="w-full px-4 py-3 rounded-lg bg-white bg-opacity-20 border border-white border-opacity-30 text-white placeholder-white placeholder-opacity-70 focus:outline-none focus:ring-2 focus:ring-orange-primary focus:border-transparent resize-none"
+                                          placeholder="Please describe your inquiry or feedback..."></textarea>
+                            </div>
+                            <button type="submit" 
+                                    class="w-full bg-orange-primary hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300 transform hover:scale-105">
+                                <i class="fas fa-paper-plane mr-2"></i>Send Message
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Info Bar -->
+            <div class="mt-12 bg-white bg-opacity-10 rounded-lg p-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                    <div>
+                        <i class="fas fa-map-marked-alt text-3xl text-orange-primary mb-2"></i>
+                        <h4 class="font-semibold">Easy to Find</h4>
+                        <p class="text-sm opacity-90">Located opposite Kalaimagal School, Vadamaduari</p>
+                    </div>
+                    <div>
+                        <i class="fas fa-parking text-3xl text-orange-primary mb-2"></i>
+                        <h4 class="font-semibold">Parking Available</h4>
+                        <p class="text-sm opacity-90">Convenient parking space for cars and two-wheelers</p>
+                    </div>
+                    <div>
+                        <i class="fas fa-wheelchair text-3xl text-orange-primary mb-2"></i>
+                        <h4 class="font-semibold">Accessible Store</h4>
+                        <p class="text-sm opacity-90">Easy access for elderly and differently-abled customers</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2025 SS Vegetables. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Cart Modal -->
+    <div id="cart-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Shopping Cart</h3>
+                <button id="close-cart" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div id="cart-items" class="space-y-4 mb-4">
+                <!-- Cart items will be loaded here -->
+            </div>
+            <div class="border-t pt-4">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="font-semibold">Total: ₹<span id="cart-total">0.00</span></span>
+                </div>
+                <button class="w-full bg-green-primary text-white py-2 rounded-lg hover:bg-green-600 transition duration-300">
+                    Visit Shop to Purchase
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vegetable Details Modal -->
+    <div id="vegetable-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div id="modal-vegetable-content" class="p-6">
+                <!-- Content will be dynamically inserted here by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

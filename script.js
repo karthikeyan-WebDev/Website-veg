@@ -1,5 +1,4 @@
-// Tamil Nadu Wholesale Market Price System - Ottanchatiram Market
-// Real wholesale prices from Ottanchatiram market in Dindigul district
+
 const wholesaleMarketPrices = {
     1: { // Tomato 1Kg
         wholesaleBase: 22, wholesaleMin: 18, wholesaleMax: 32,

@@ -3,7 +3,7 @@ const wholesaleMarketPrices = {
     1: { // Tomato 1Kg
         wholesaleBase: 22, wholesaleMin: 18, wholesaleMax: 32,
         profitMargin: 0.6, // 60% markup
-        transportCost: 1, otherExpenses: 1 // Lower transport cost from local Ottanchatiram market
+        transportCost: 1, otherExpenses: 1 
     },
     2: { // Onion 1Kg  
         wholesaleBase: 20, wholesaleMin: 16, wholesaleMax: 28,

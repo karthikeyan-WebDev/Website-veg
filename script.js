@@ -1415,16 +1415,7 @@ function showVegetableDetails(productId) {
         console.log('No nutrition data found for product:', product.name);
     }
     
-    // Add action buttons
-    contentHTML += `
-        <div class="mt-6 flex flex-col sm:flex-row gap-3">
-            <a href="tel:+919042438808" class="flex-1 bg-green-primary text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-colors text-center font-medium">
-                <i class="fas fa-phone mr-2"></i>Call to Order
-            </a>
-            <a href="https://wa.me/919042438808?text=Hi, I'm interested in ${encodeURIComponent(product.name)}" target="_blank" class="flex-1 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors text-center font-medium">
-                <i class="fab fa-whatsapp mr-2"></i>WhatsApp
-            </a>
-        </div>`;
+    // Action buttons removed as requested
     
     // Set content and show modal
     modalContent.innerHTML = contentHTML;

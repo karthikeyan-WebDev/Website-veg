@@ -1001,7 +1001,7 @@ function createProductCard(product) {
                         Visit Shop
                     </div>
                     <div class="text-xs text-gray-500">
-                        Call: 9876543210
+                        Call:9090909090
                     </div>
                 </div>
             </div>

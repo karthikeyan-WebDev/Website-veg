@@ -12,22 +12,10 @@
     
  
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'green-primary': '#16a34a',
-                        'orange-primary': '#ea580c',
-                    }
-                }
-            }
-        }
-    </script>
+    <script src="https://cdn.tailwindcss.com" crossorigin="anonymous"></script>
     
     <style>
         * {
@@ -36,6 +24,63 @@
         
         html {
             scroll-behavior: smooth;
+        }
+        
+        /* Tailwind Config */
+        :root {
+            --green-primary: #16a34a;
+            --orange-primary: #ea580c;
+        }
+        
+        /* Fallback styles for contact section in case Tailwind fails */
+        #contact {
+            background-color: var(--green-primary) !important;
+            color: white !important;
+            padding: 4rem 0 !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        /* Additional fallback styles */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        .grid {
+            display: grid;
+        }
+        
+        .grid-cols-1 {
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+        }
+        
+        @media (min-width: 1024px) {
+            .lg\\:grid-cols-2 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+        
+        .gap-12 {
+            gap: 3rem;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .mb-12 {
+            margin-bottom: 3rem;
+        }
+        
+        .rounded-lg {
+            border-radius: 0.5rem;
+        }
+        
+        .p-8 {
+            padding: 2rem;
         }
         
         .vegetable-card {
@@ -72,6 +117,28 @@
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
+    
+    <script>
+        // Configure Tailwind after it loads
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof tailwind !== 'undefined') {
+                try {
+                    tailwind.config = {
+                        theme: {
+                            extend: {
+                                colors: {
+                                    'green-primary': '#16a34a',
+                                    'orange-primary': '#ea580c',
+                                }
+                            }
+                        }
+                    };
+                } catch (e) {
+                    console.log('Tailwind config error (non-critical):', e);
+                }
+            }
+        });
+    </script>
 </head>
 <body class="bg-gray-50">
     <!-- Clean Modern Header -->

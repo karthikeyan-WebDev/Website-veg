@@ -32,55 +32,13 @@
             --orange-primary: #ea580c;
         }
         
-        /* Fallback styles for contact section in case Tailwind fails */
+        /* Only fallback for contact section visibility - no layout conflicts */
         #contact {
             background-color: var(--green-primary) !important;
             color: white !important;
-            padding: 4rem 0 !important;
             display: block !important;
             visibility: visible !important;
             opacity: 1 !important;
-        }
-        
-        /* Additional fallback styles */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1rem;
-        }
-        
-        .grid {
-            display: grid;
-        }
-        
-        .grid-cols-1 {
-            grid-template-columns: repeat(1, minmax(0, 1fr));
-        }
-        
-        @media (min-width: 1024px) {
-            .lg\\:grid-cols-2 {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-        }
-        
-        .gap-12 {
-            gap: 3rem;
-        }
-        
-        .text-center {
-            text-align: center;
-        }
-        
-        .mb-12 {
-            margin-bottom: 3rem;
-        }
-        
-        .rounded-lg {
-            border-radius: 0.5rem;
-        }
-        
-        .p-8 {
-            padding: 2rem;
         }
         
         .vegetable-card {

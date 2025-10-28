@@ -412,6 +412,7 @@ const mobileSearchInput = document.getElementById('mobile-search-input');
 // Initialize the app
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM loaded, initializing...');
+    console.log('Products array:', products);
     
     // Update timestamp display immediately
     updateTimestampDisplay();
@@ -427,6 +428,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (productsGrid) {
         console.log('Products grid found, displaying products...');
         displayProducts(products);
+        console.log('Products grid HTML:', productsGrid.innerHTML);
         updateCartUI(); // Safe now since cart function is disabled
         setupEventListeners();
         console.log('App initialized successfully');
@@ -552,15 +554,18 @@ function displayProducts(productsToShow) {
     
     console.log('Products displayed successfully');
     console.log('First product card HTML:', grid.firstElementChild?.outerHTML?.substring(0, 200) + '...');
+    console.log('Grid HTML after display:', grid.innerHTML);
 }
 
 // Create product card
 function createProductCard(product) {
+    console.log('Creating card for product:', product);
     const div = document.createElement('div');
     div.className = 'vegetable-card bg-white rounded-lg shadow-lg overflow-hidden';
     
-    // Remove weight from name
-    const nameWithoutWeight = product.name.split(' ').slice(0, -1).join(' ');
+    const nameWithoutWeight = product.name;
+    
+    console.log('Creating card with name:', nameWithoutWeight);
     
     div.innerHTML = `
         <div class="relative cursor-pointer" onclick="showVegetableDetails(${product.id})">
@@ -572,18 +577,13 @@ function createProductCard(product) {
                 Click for details
             </div>
             <div class="absolute bottom-2 left-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs">
-                Fresh Today - Sep 30, 2025
+                Fresh Today
             </div>
         </div>
         <div class="p-4">
             <h3 class="text-lg font-semibold mb-2 cursor-pointer hover:text-green-primary transition duration-300" onclick="showVegetableDetails(${product.id})">${nameWithoutWeight}</h3>
             <p class="text-gray-600 text-sm mb-3">${product.description}</p>
             <div class="flex justify-between items-center">
-                <div class="flex flex-col">
-                    <div class="flex items-center space-x-2" id="price-display-${product.id}">
-                        <span class="text-lg text-gray-500 font-medium">Visit store for price</span>
-                    </div>
-                </div>
                 <div class="text-right">
                     <div class="text-sm text-green-600 font-medium mb-1">
                         <i class="fas fa-store mr-1"></i>

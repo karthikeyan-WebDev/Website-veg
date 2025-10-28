@@ -412,34 +412,43 @@ const mobileSearchInput = document.getElementById('mobile-search-input');
 // Initialize the app
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM loaded, initializing...');
-    console.log('Products array:', products);
     
-    // Update timestamp display immediately
-    updateTimestampDisplay();
+    // Debug: Check if script is loaded
+    console.log('Script is loaded and running');
     
-    // Check admin mode
-    checkAdminMode();
-    
-    console.log('Products array length:', products.length);
-    console.log('Products grid element:', document.getElementById('products-grid'));
-    
-    // Ensure elements exist before using them
-    const productsGrid = document.getElementById('products-grid');
-    if (productsGrid) {
-        console.log('Products grid found, displaying products...');
-        displayProducts(products);
-        console.log('Products grid HTML:', productsGrid.innerHTML);
-        updateCartUI(); // Safe now since cart function is disabled
-        setupEventListeners();
-        console.log('App initialized successfully');
+    // Debug: Check products array
+    if (typeof products !== 'undefined') {
+        console.log('Products array exists:', products);
+        console.log('Number of products:', products.length);
     } else {
-        console.error('Products grid element not found!');
+        console.error('Products array is undefined!');
     }
     
-    // Set up global smooth scrolling for all navigation links
-    setTimeout(() => {
-        setupSmoothScrolling();
-    }, 500);
+    // Debug: Check if products-grid element exists
+    const productsGrid = document.getElementById('products-grid');
+    console.log('Products grid element:', productsGrid);
+    
+    if (productsGrid) {
+        console.log('Products grid found, attempting to display products...');
+        try {
+            displayProducts(products);
+            console.log('displayProducts function completed');
+            console.log('Products grid HTML after display:', productsGrid.innerHTML);
+        } catch (error) {
+            console.error('Error in displayProducts:', error);
+        }
+
+        // Initialize app features once products are displayed
+        setupEventListeners();
+        console.log('App initialized successfully');
+
+        // Set up global smooth scrolling for all navigation links
+        setTimeout(() => {
+            setupSmoothScrolling();
+        }, 500);
+    } else {
+        console.error('Products grid element not found in DOM!');
+    }
 });
 
 // Setup smooth scrolling globally
@@ -526,31 +535,56 @@ testNutritionData();
 
 // Display products
 function displayProducts(productsToShow) {
-    const grid = document.getElementById('products-grid');
-    if (!grid) {
-        console.error('Products grid not found');
-        return;
+    try {
+        console.log('displayProducts called with:', productsToShow);
+        
+        const grid = document.getElementById('products-grid');
+        if (!grid) {
+            console.error('Products grid not found');
+            return;
+        }
+        
+        // Show loading indicator
+        grid.innerHTML = '<div class="col-span-full text-center py-8"><div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-green-500 border-t-transparent"></div></div>';
+        
+        // Validate input
+        if (!Array.isArray(productsToShow)) {
+            console.error('productsToShow is not an array:', productsToShow);
+            grid.innerHTML = '<div class="col-span-full text-center py-8 text-red-500">Error: Invalid product data</div>';
+            return;
+        }
+        
+        if (productsToShow.length === 0) {
+            console.log('No products to show');
+            grid.innerHTML = '<div class="col-span-full text-center py-8 text-gray-500">No products found</div>';
+            return;
+        }
+        
+        console.log('Creating product cards for', productsToShow.length, 'products');
+        
+        // Clear the grid before adding new products
+        grid.innerHTML = '';
+        
+        // Create and append product cards
+        productsToShow.forEach((product, index) => {
+            console.log('Processing product', index + 1, ':', product?.name || 'Unknown');
+            const productCard = createProductCard(product);
+            if (productCard) {
+                grid.appendChild(productCard);
+                console.log('Added card for:', product?.name || 'Unknown');
+            }
+        });
+        
+        // Verify cards were added
+        console.log('Final grid contents:', grid.children.length, 'cards');
+        
+    } catch (error) {
+        console.error('Error in displayProducts:', error);
+        const grid = document.getElementById('products-grid');
+        if (grid) {
+            grid.innerHTML = '<div class="col-span-full text-center py-8 text-red-500">Error displaying products. Please try again.</div>';
+        }
     }
-    
-    console.log('Displaying', productsToShow.length, 'products');
-    
-    // Remove loading indicator
-    const loadingIndicator = document.getElementById('loading-indicator');
-    if (loadingIndicator) {
-        loadingIndicator.remove();
-    }
-    
-    grid.innerHTML = '';
-    
-    if (productsToShow.length === 0) {
-        grid.innerHTML = '<div class="col-span-full text-center py-8 text-gray-500">No products found</div>';
-        return;
-    }
-    
-    productsToShow.forEach(product => {
-        const productCard = createProductCard(product);
-        grid.appendChild(productCard);
-    });
     
     console.log('Products displayed successfully');
     console.log('First product card HTML:', grid.firstElementChild?.outerHTML?.substring(0, 200) + '...');
@@ -559,33 +593,43 @@ function displayProducts(productsToShow) {
 
 // Create product card
 function createProductCard(product) {
-    console.log('Creating card for product:', product);
-    const div = document.createElement('div');
-    div.className = 'vegetable-card bg-white rounded-lg shadow-lg overflow-hidden';
-    
-    const nameWithoutWeight = product.name;
-    
-    console.log('Creating card with name:', nameWithoutWeight);
-    
-    div.innerHTML = `
-        <div class="relative cursor-pointer" onclick="showVegetableDetails(${product.id})">
-            <img src="${product.image}" 
-                 alt="${nameWithoutWeight}" 
-                 class="w-full h-48 object-cover hover:opacity-90 transition duration-300"
-                 loading="lazy">
-            <div class="absolute top-2 right-2 bg-green-primary text-white px-2 py-1 rounded-full text-xs">
-                Click for details
+    try {
+        console.log('Creating card for product:', product);
+        
+        if (!product || typeof product !== 'object') {
+            console.error('Invalid product:', product);
+            return null;
+        }
+        
+        const div = document.createElement('div');
+        div.className = 'vegetable-card bg-white rounded-lg shadow-lg overflow-hidden';
+        
+        const name = product.name || 'Unknown Product';
+        const description = product.description || 'No description available';
+        const image = product.image || '';
+        const id = product.id || 0;
+        
+        console.log('Creating card with name:', name);
+        
+        div.innerHTML = `
+            <div class="relative cursor-pointer group">
+                <img src="${image}" 
+                     alt="${name}" 
+                     class="w-full h-48 object-cover group-hover:opacity-90 transition duration-300"
+                     loading="lazy"
+                     onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\' viewBox=\'0 0 400 300\'%3E%3Crect width=\'400\' height=\'300\' fill=\'%23cccccc\'/%3E%3Ctext x=\'200\' y=\'150\' font-family=\'Arial\' font-size=\'24\' fill=\'%23666666\' text-anchor=\'middle\'%3ENo Image%3C/text%3E%3C/svg%3E'">
+                <div class="absolute top-2 right-2 bg-green-600 text-white px-2 py-1 rounded-full text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    Click for details
+                </div>
+                <div class="absolute bottom-2 left-2 bg-black bg-opacity-60 text-white px-2 py-1 rounded text-xs">
+                    Fresh Today
+                </div>
             </div>
-            <div class="absolute bottom-2 left-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs">
-                Fresh Today
-            </div>
-        </div>
-        <div class="p-4">
-            <h3 class="text-lg font-semibold mb-2 cursor-pointer hover:text-green-primary transition duration-300" onclick="showVegetableDetails(${product.id})">${nameWithoutWeight}</h3>
-            <p class="text-gray-600 text-sm mb-3">${product.description}</p>
-            <div class="flex justify-between items-center">
-                <div class="text-right">
-                    <div class="text-sm text-green-600 font-medium mb-1">
+            <div class="p-4">
+                <h3 class="text-lg font-semibold mb-2 hover:text-green-600 transition-colors cursor-pointer">${name}</h3>
+                <p class="text-gray-600 text-sm mb-3">${description}</p>
+                <div class="flex justify-between items-center">
+                    <div class="text-sm text-green-600 font-medium">
                         <i class="fas fa-store mr-1"></i>
                         Visit Shop
                     </div>
@@ -594,10 +638,23 @@ function createProductCard(product) {
                     </div>
                 </div>
             </div>
-        </div>
-    `;
-    
-    return div;
+        `;
+        
+        // Add click handler for the entire card
+        div.addEventListener('click', () => {
+            if (typeof showVegetableDetails === 'function') {
+                showVegetableDetails(id);
+            } else {
+                console.error('showVegetableDetails function is not defined');
+            }
+        });
+        
+        return div;
+        
+    } catch (error) {
+        console.error('Error creating product card:', error);
+        return null;
+    }
 }
 
 // Add to cart

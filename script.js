@@ -1,371 +1,9 @@
 
-const wholesaleMarketPrices = {
-    1: { // Tomato 1Kg
-        wholesaleBase: 22, wholesaleMin: 18, wholesaleMax: 32,
-        profitMargin: 0.6, // 60% markup
-        transportCost: 1, otherExpenses: 1 
-    },
-    2: { // Onion 1Kg  
-        wholesaleBase: 20, wholesaleMin: 16, wholesaleMax: 28,
-        profitMargin: 0.6, transportCost: 1, otherExpenses: 1
-    },
-    3: { // Potato 1Kg
-        wholesaleBase: 18, wholesaleMin: 15, wholesaleMax: 25,
-        profitMargin: 0.55, transportCost: 1, otherExpenses: 1
-    },
-    4: { // Green Peas 500g
-        wholesaleBase: 40, wholesaleMin: 35, wholesaleMax: 50,
-        profitMargin: 0.65, transportCost: 2, otherExpenses: 1
-    },
-    5: { // Green Chili 250g
-        wholesaleBase: 28, wholesaleMin: 22, wholesaleMax: 38,
-        profitMargin: 0.65, transportCost: 1, otherExpenses: 1
-    },
-    6: { // Cucumber 500g
-        wholesaleBase: 18, wholesaleMin: 14, wholesaleMax: 25,
-        profitMargin: 0.7, transportCost: 1, otherExpenses: 1
-    },
-    7: { // Cauliflower 1 Piece
-        wholesaleBase: 30, wholesaleMin: 25, wholesaleMax: 40,
-        profitMargin: 0.6, transportCost: 2, otherExpenses: 1
-    },
-    8: { // Bitter Gourd 500g
-        wholesaleBase: 32, wholesaleMin: 28, wholesaleMax: 45,
-        profitMargin: 0.75, transportCost: 2, otherExpenses: 1
-    },
-    9: { // Pointed Gourd 500g
-        wholesaleBase: 30, wholesaleMin: 25, wholesaleMax: 40,
-        profitMargin: 0.7, transportCost: 2, otherExpenses: 1
-    },
-    11: { // Cabbage 1 Piece
-        wholesaleBase: 20, wholesaleMin: 16, wholesaleMax: 28,
-        profitMargin: 0.6, transportCost: 1, otherExpenses: 1
-    },
-    12: { // Ginger 250g
-        wholesaleBase: 45, wholesaleMin: 40, wholesaleMax: 60,
-        profitMargin: 0.55, transportCost: 1, otherExpenses: 2
-    },
-    18: { // Capsicum 500g
-        wholesaleBase: 48, wholesaleMin: 42, wholesaleMax: 65,
-        profitMargin: 0.6, transportCost: 2, otherExpenses: 1
-    },
-    19: { // Pumpkin 1Kg
-        wholesaleBase: 15, wholesaleMin: 12, wholesaleMax: 22,
-        profitMargin: 0.7, transportCost: 1, otherExpenses: 1
-    },
-    13: { // Carrot 500g
-        wholesaleBase: 22, wholesaleMin: 18, wholesaleMax: 30,
-        profitMargin: 0.6, transportCost: 1, otherExpenses: 1
-    },
-    14: { // Mushroom 250g
-        wholesaleBase: 55, wholesaleMin: 50, wholesaleMax: 70,
-        profitMargin: 0.55, transportCost: 2, otherExpenses: 2
-    },
-    15: { // Broccoli 1 Piece
-        wholesaleBase: 48, wholesaleMin: 42, wholesaleMax: 65,
-        profitMargin: 0.6, transportCost: 2, otherExpenses: 1
-    },
-    16: { // Radish 500g
-        wholesaleBase: 18, wholesaleMin: 14, wholesaleMax: 25,
-        profitMargin: 0.7, transportCost: 1, otherExpenses: 1
-    }
-};
-
-// Calculate retail price from wholesale market price
-function calculateRetailPrice(productId, baseDate = new Date()) {
-    const priceConfig = wholesaleMarketPrices[productId];
-    if (!priceConfig) return { retailPrice: 35, wholesalePrice: 22, profit: 13 };
-    
-    // Create seed based on date and product ID for consistent daily prices
-    const dateString = baseDate.toISOString().split('T')[0];
-    const seed = parseInt(dateString.replace(/-/g, '') + productId.toString());
-    
-    // Generate wholesale market price for today
-    const random = (seed * 9301 + 49297) % 233280 / 233280;
-    const priceRange = priceConfig.wholesaleMax - priceConfig.wholesaleMin;
-    const todayWholesalePrice = Math.round(priceConfig.wholesaleMin + (random * priceRange));
-    
-    // Calculate total cost (wholesale + transport + other expenses)
-    const totalCost = todayWholesalePrice + priceConfig.transportCost + priceConfig.otherExpenses;
-    
-    // Calculate retail price with profit margin
-    const retailPrice = Math.round(totalCost * (1 + priceConfig.profitMargin));
-    
-    // Calculate competitor/market retail price (10-20% higher than our price)
-    const competitorMarkup = 0.1 + (random * 0.15); // 10-25% higher
-    const marketPrice = Math.round(retailPrice * (1 + competitorMarkup));
-    
-    return {
-        wholesalePrice: todayWholesalePrice,
-        totalCost: totalCost,
-        retailPrice: retailPrice,
-        marketPrice: marketPrice,
-        profit: retailPrice - totalCost,
-        profitPercentage: Math.round(((retailPrice - totalCost) / totalCost) * 100)
-    };
-}
-
-// Generate daily price based on date
-function getDailyPrice(productId, baseDate = new Date()) {
-    const pricing = calculateRetailPrice(productId, baseDate);
-    return {
-        price: pricing.retailPrice,
-        originalPrice: pricing.marketPrice,
-        wholesalePrice: pricing.wholesalePrice,
-        profit: pricing.profit
-    };
-}
-
-// Update all product prices for today
-function updateDailyPrices() {
-    const today = new Date();
-    products.forEach(product => {
-        if (wholesaleMarketPrices[product.id]) {
-            const dailyPricing = getDailyPrice(product.id, today);
-            product.price = dailyPricing.price;
-            product.originalPrice = dailyPricing.originalPrice;
-            product.wholesalePrice = dailyPricing.wholesalePrice;
-            product.profit = dailyPricing.profit;
-        }
-    });
-    
-    // Update last updated timestamp
-    localStorage.setItem('lastPriceUpdate', today.toDateString());
-    updateTimestampDisplay();
-    console.log('Daily prices updated for', today.toDateString());
-}
-
-// Update the timestamp display in the UI
-function updateTimestampDisplay() {
-    const timestampElement = document.getElementById('update-timestamp');
-    if (timestampElement) {
-        const now = new Date();
-        const timeString = now.toLocaleTimeString('en-IN', { 
-            hour: '2-digit', 
-            minute: '2-digit',
-            hour12: true 
-        });
-        const dateString = now.toLocaleDateString('en-IN', {
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric'
-        });
-        timestampElement.textContent = `${dateString} at ${timeString}`;
-    }
-}
-
-// Check if prices need updating (once per day)
-function checkAndUpdatePrices() {
-    const today = new Date();
-    const lastUpdate = localStorage.getItem('lastPriceUpdate');
-    
-    if (!lastUpdate || lastUpdate !== today.toDateString()) {
-        updateDailyPrices();
-        
-        // Show price update notification
-        showPriceUpdateNotification();
-        
-        // Refresh display if products are already shown
-        if (document.getElementById('products-grid').children.length > 0) {
-            displayProducts(products);
-        }
-    }
-}
-
-// Show notification about daily price updates
-function showPriceUpdateNotification() {
-    const notification = document.createElement('div');
-    notification.className = 'fixed top-20 right-4 bg-green-primary text-white px-4 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300';
-    notification.innerHTML = `
-        <div class="flex items-center space-x-2">
-            <i class="fas fa-sync-alt"></i>
-            <span class="font-medium">Daily prices updated!</span>
-        </div>
-        <div class="text-sm opacity-90 mt-1">Fresh rates for ${new Date().toLocaleDateString()}</div>
-    `;
-    
-    document.body.appendChild(notification);
-    
-    // Slide in
-    setTimeout(() => {
-        notification.classList.remove('translate-x-full');
-    }, 100);
-    
-    // Slide out and remove
-    setTimeout(() => {
-        notification.classList.add('translate-x-full');
-        setTimeout(() => {
-            document.body.removeChild(notification);
-        }, 300);
-    }, 4000);
-}
-
-// Manual price refresh function
-function manualPriceRefresh() {
-    updateDailyPrices();
-    showPriceUpdateNotification();
-    displayProducts(products);
-}
-
-// Admin functionality for viewing wholesale prices
-let logoClickCount = 0;
-let logoClickTimer = null;
-
-function logoClick() {
-    logoClickCount++;
-    
-    // Reset counter after 3 seconds
-    if (logoClickTimer) clearTimeout(logoClickTimer);
-    logoClickTimer = setTimeout(() => {
-        logoClickCount = 0;
-    }, 3000);
-    
-    // Enable admin mode after 5 clicks
-    if (logoClickCount >= 5) {
-        enableAdminMode();
-        logoClickCount = 0;
-    }
-}
-
-function enableAdminMode() {
-    const adminToggle = document.getElementById('admin-toggle');
-    const rateToggle = document.getElementById('rate-toggle');
-    
-    if (adminToggle) {
-        adminToggle.classList.remove('hidden');
-    }
-    if (rateToggle) {
-        rateToggle.classList.remove('hidden');
-    }
-    
-    localStorage.setItem('adminMode', 'true');
-    
-    // Show notification
-    const notification = document.createElement('div');
-    notification.className = 'fixed top-20 right-4 bg-blue-600 text-white px-4 py-3 rounded-lg shadow-lg z-50';
-    notification.innerHTML = `
-        <div class="flex items-center space-x-2">
-            <i class="fas fa-unlock-alt"></i>
-            <span class="font-medium">Admin Mode Enabled</span>
-        </div>
-        <div class="text-sm opacity-90 mt-1">View Ottanchatiram market costs and control rate display</div>
-    `;
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        document.body.removeChild(notification);
-    }, 4000);
-}
-
-function toggleWholesalePrices() {
-    const showWholesale = localStorage.getItem('showWholesalePrices') === 'true';
-    const newSetting = !showWholesale;
-    
-    localStorage.setItem('showWholesalePrices', newSetting.toString());
-    
-    const toggleText = document.getElementById('wholesale-toggle-text');
-    if (toggleText) {
-        toggleText.textContent = newSetting ? 'Hide Costs' : 'Show Costs';
-    }
-    
-    // Refresh display
-    displayProducts(products);
-}
-
-function toggleRateDisplay() {
-    const hideRates = localStorage.getItem('hideRates') === 'true';
-    const newSetting = !hideRates;
-    
-    localStorage.setItem('hideRates', newSetting.toString());
-    
-    const toggleText = document.getElementById('rate-toggle-text');
-    if (toggleText) {
-        toggleText.textContent = newSetting ? 'Show Rates' : 'Hide Rates';
-    }
-    
-    // Hide/show all price displays
-    const allPriceDisplays = document.querySelectorAll('[id^="price-display-"]');
-    allPriceDisplays.forEach(priceDisplay => {
-        if (newSetting) {
-            priceDisplay.innerHTML = '<span class="text-lg text-gray-500 font-medium">Price on visit</span>';
-        } else {
-            // Refresh the display to show actual prices
-            displayProducts(products);
-        }
-    });
-    
-    // Show notification
-    const notification = document.createElement('div');
-    notification.className = 'fixed top-20 right-4 bg-red-600 text-white px-4 py-3 rounded-lg shadow-lg z-50';
-    notification.innerHTML = `
-        <div class="flex items-center space-x-2">
-            <i class="fas fa-eye${newSetting ? '-slash' : ''}"></i>
-            <span class="font-medium">${newSetting ? 'Rates Hidden' : 'Rates Visible'}</span>
-        </div>
-        <div class="text-sm opacity-90 mt-1">${newSetting ? 'Customers will see "Price on visit"' : 'Showing all vegetable prices'}</div>
-    `;
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        document.body.removeChild(notification);
-    }, 3000);
-}
-
-// Check rate display setting
-function checkRateDisplaySetting() {
-    const hideRates = localStorage.getItem('hideRates') === 'true';
-    const toggleText = document.getElementById('rate-toggle-text');
-    if (toggleText) {
-        toggleText.textContent = hideRates ? 'Show Rates' : 'Hide Rates';
-    }
-    
-    // Apply rate hiding if enabled
-    if (hideRates) {
-        setTimeout(() => {
-            const allPriceDisplays = document.querySelectorAll('[id^="price-display-"]');
-            allPriceDisplays.forEach(priceDisplay => {
-                priceDisplay.innerHTML = '<span class="text-lg text-gray-500 font-medium">Price on visit</span>';
-            });
-        }, 100);
-    }
-}
-
-// Check admin mode on load
-function checkAdminMode() {
-    if (localStorage.getItem('adminMode') === 'true') {
-        const adminToggle = document.getElementById('admin-toggle');
-        const rateToggle = document.getElementById('rate-toggle');
-        
-        if (adminToggle) {
-            adminToggle.classList.remove('hidden');
-        }
-        if (rateToggle) {
-            rateToggle.classList.remove('hidden');
-        }
-    }
-    
-    // Update toggle text based on current settings
-    const showWholesale = localStorage.getItem('showWholesalePrices') === 'true';
-    const toggleText = document.getElementById('wholesale-toggle-text');
-    if (toggleText) {
-        toggleText.textContent = showWholesale ? 'Hide Costs' : 'Show Costs';
-    }
-    
-    // Check rate display setting
-    checkRateDisplaySetting();
-}
-
-// Products data with today's actual vegetable prices (September 30, 2025) - Fresh Vegetables
 const products = [
-    // Premium Fresh Vegetables
     {
         id: 1,
-        name: "Tomato 1Kg",
-        price: 35,
-        originalPrice: 42,
-        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23ff6b6b'/%3E%3Ctext x='200' y='150' font-family='Arial' font-size='24' font-weight='bold' text-anchor='middle' dy='0.3em' fill='white'%3ETomato 1Kg%3C/text%3E%3C/svg%3E",
+        name: "Tomato",
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23ff6b6b'/%3E%3Ctext x='200' y='150' font-family='Arial' font-size='24' font-weight='bold' text-anchor='middle' dy='0.3em' fill='white'%3ETomato%3C/text%3E%3C/svg%3E",
         category: "fruit-vegetable",
         description: "Farm fresh red tomatoes, perfect for cooking and salads. Premium quality organic produce.",
         nutrition: {
@@ -386,10 +24,8 @@ const products = [
     },
     {
         id: 2,
-        name: "Onion 1Kg",
-        price: 32,
-        originalPrice: 38,
-        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%238b4513'/%3E%3Ctext x='200' y='150' font-family='Arial' font-size='24' font-weight='bold' text-anchor='middle' dy='0.3em' fill='white'%3EOnion 1Kg%3C/text%3E%3C/svg%3E",
+        name: "Onion",
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%238b4513'/%3E%3Ctext x='200' y='150' font-family='Arial' font-size='24' font-weight='bold' text-anchor='middle' dy='0.3em' fill='white'%3EOnion%3C/text%3E%3C/svg%3E",
         category: "root",
         description: "Premium quality fresh onions, essential for Indian cooking. Farm fresh and aromatic.",
         nutrition: {
@@ -410,10 +46,8 @@ const products = [
     },
     {
         id: 3,
-        name: "Potato 1Kg",
-        price: 28,
-        originalPrice: 35,
-        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23daa520'/%3E%3Ctext x='200' y='150' font-family='Arial' font-size='24' font-weight='bold' text-anchor='middle' dy='0.3em' fill='white'%3EPotato 1Kg%3C/text%3E%3C/svg%3E",
+        name: "Potato",
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23daa520'/%3E%3Ctext x='200' y='150' font-family='Arial' font-size='24' font-weight='bold' text-anchor='middle' dy='0.3em' fill='white'%3EPotato%3C/text%3E%3C/svg%3E",
         category: "root",
         description: "Premium quality fresh potatoes, versatile for all cooking needs.",
         nutrition: {
@@ -434,10 +68,8 @@ const products = [
     },
     {
         id: 4,
-        name: "Green Peas 500g",
-        price: 65,
-        originalPrice: 75,
-        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%2332cd32'/%3E%3Ctext x='200' y='150' font-family='Arial' font-size='20' font-weight='bold' text-anchor='middle' dy='0.3em' fill='white'%3EGreen Peas 500g%3C/text%3E%3C/svg%3E",
+        name: "Green Peas",
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%2332cd32'/%3E%3Ctext x='200' y='150' font-family='Arial' font-size='20' font-weight='bold' text-anchor='middle' dy='0.3em' fill='white'%3EGreen Peas%3C/text%3E%3C/svg%3E",
         category: "pod",
         description: "Fresh organic green peas, sweet and protein-rich. Premium quality.",
         nutrition: {
@@ -458,10 +90,8 @@ const products = [
     },
     {
         id: 5,
-        name: "Green Chili 250g",
-        price: 45,
-        originalPrice: 52,
-        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23228b22'/%3E%3Ctext x='200' y='150' font-family='Arial' font-size='18' font-weight='bold' text-anchor='middle' dy='0.3em' fill='white'%3EGreen Chili 250g%3C/text%3E%3C/svg%3E",
+        name: "Green Chili",
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23228b22'/%3E%3Ctext x='200' y='150' font-family='Arial' font-size='18' font-weight='bold' text-anchor='middle' dy='0.3em' fill='white'%3EGreen Chili%3C/text%3E%3C/svg%3E",
         category: "spice-vegetable",
         description: "Fresh organic green chilies, adds natural spice and flavor to your dishes.",
         nutrition: {
@@ -482,10 +112,8 @@ const products = [
     },
     {
         id: 6,
-        name: "Cucumber 500g",
-        price: 30,
-        originalPrice: 36,
-        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%2300fa9a'/%3E%3Ctext x='200' y='150' font-family='Arial' font-size='20' font-weight='bold' text-anchor='middle' dy='0.3em' fill='white'%3ECucumber 500g%3C/text%3E%3C/svg%3E",
+        name: "Cucumber",
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%2300fa9a'/%3E%3Ctext x='200' y='150' font-family='Arial' font-size='20' font-weight='bold' text-anchor='middle' dy='0.3em' fill='white'%3ECucumber%3C/text%3E%3C/svg%3E",
         category: "fruit-vegetable",
         description: "Fresh organic cucumbers, crisp and refreshing for salads.",
         nutrition: {
@@ -506,10 +134,8 @@ const products = [
     },
     {
         id: 7,
-        name: "Cauliflower 1 Piece",
-        price: 48,
-        originalPrice: 55,
-        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23f5f5dc'/%3E%3Ctext x='200' y='150' font-family='Arial' font-size='18' font-weight='bold' text-anchor='middle' dy='0.3em' fill='%23333'%3ECauliflower 1 Piece%3C/text%3E%3C/svg%3E",
+        name: "Cauliflower",
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23f5f5dc'/%3E%3Ctext x='200' y='150' font-family='Arial' font-size='18' font-weight='bold' text-anchor='middle' dy='0.3em' fill='%23333'%3ECauliflower%3C/text%3E%3C/svg%3E",
         category: "flower",
         description: "Fresh organic white cauliflower, nutritious and versatile for Indian cuisine.",
         nutrition: {
@@ -530,10 +156,8 @@ const products = [
     },
     {
         id: 8,
-        name: "Bitter Gourd 500g",
-        price: 55,
-        originalPrice: 65,
-        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23556b2f'/%3E%3Ctext x='200' y='150' font-family='Arial' font-size='18' font-weight='bold' text-anchor='middle' dy='0.3em' fill='white'%3EBitter Gourd 500g%3C/text%3E%3C/svg%3E",
+        name: "Bitter Gourd",
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23556b2f'/%3E%3Ctext x='200' y='150' font-family='Arial' font-size='18' font-weight='bold' text-anchor='middle' dy='0.3em' fill='white'%3EBitter Gourd%3C/text%3E%3C/svg%3E",
         category: "gourd",
         description: "Fresh organic bitter gourd, excellent for health benefits and diabetes management.",
         nutrition: {
@@ -554,10 +178,8 @@ const products = [
     },
     {
         id: 9,
-        name: "Pointed Gourd 500g",
-        price: 50,
-        originalPrice: 58,
-        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%2390ee90'/%3E%3Ctext x='200' y='150' font-family='Arial' font-size='16' font-weight='bold' text-anchor='middle' dy='0.3em' fill='%23333'%3EPointed Gourd 500g%3C/text%3E%3C/svg%3E",
+        name: "Pointed Gourd",
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%2390ee90'/%3E%3Ctext x='200' y='150' font-family='Arial' font-size='16' font-weight='bold' text-anchor='middle' dy='0.3em' fill='%23333'%3EPointed Gourd%3C/text%3E%3C/svg%3E",
         category: "gourd",
         description: "Fresh pointed gourd, popular in Indian cuisine.",
         nutrition: {
@@ -578,10 +200,8 @@ const products = [
     },
     {
         id: 11,
-        name: "Cabbage 1 Piece",
-        price: 32,
-        originalPrice: 40,
-        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%2332cd32'/%3E%3Ctext x='200' y='150' font-family='Arial' font-size='20' font-weight='bold' text-anchor='middle' dy='0.3em' fill='white'%3ECabbage 1 Piece%3C/text%3E%3C/svg%3E",
+        name: "Cabbage",
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%2332cd32'/%3E%3Ctext x='200' y='150' font-family='Arial' font-size='20' font-weight='bold' text-anchor='middle' dy='0.3em' fill='white'%3ECabbage%3C/text%3E%3C/svg%3E",
         category: "leafy",
         description: "Fresh green cabbage, crunchy and nutritious.",
         nutrition: {
@@ -602,10 +222,8 @@ const products = [
     },
     {
         id: 12,
-        name: "Ginger 250g",
-        price: 70,
-        originalPrice: 85,
-        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23daa520'/%3E%3Ctext x='200' y='150' font-family='Arial' font-size='22' font-weight='bold' text-anchor='middle' dy='0.3em' fill='white'%3EGinger 250g%3C/text%3E%3C/svg%3E",
+        name: "Ginger",
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23daa520'/%3E%3Ctext x='200' y='150' font-family='Arial' font-size='22' font-weight='bold' text-anchor='middle' dy='0.3em' fill='white'%3EGinger%3C/text%3E%3C/svg%3E",
         category: "root-spice",
         description: "Fresh organic ginger root, aromatic and medicinal with anti-inflammatory properties.",
         nutrition: {
@@ -626,10 +244,8 @@ const products = [
     },
     {
         id: 18,
-        name: "Capsicum 500g",
-        price: 75,
-        originalPrice: 88,
-        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23ff4500'/%3E%3Ctext x='200' y='150' font-family='Arial' font-size='20' font-weight='bold' text-anchor='middle' dy='0.3em' fill='white'%3ECapsicum 500g%3C/text%3E%3C/svg%3E",
+        name: "Capsicum",
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23ff4500'/%3E%3Ctext x='200' y='150' font-family='Arial' font-size='20' font-weight='bold' text-anchor='middle' dy='0.3em' fill='white'%3ECapsicum%3C/text%3E%3C/svg%3E",
         category: "fruit-vegetable",
         description: "Fresh colored capsicum, sweet and crunchy.",
         nutrition: {
@@ -650,10 +266,8 @@ const products = [
     },
     {
         id: 19,
-        name: "Pumpkin 1Kg",
-        price: 25,
-        originalPrice: 32,
-        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23ff8c00'/%3E%3Ctext x='200' y='150' font-family='Arial' font-size='22' font-weight='bold' text-anchor='middle' dy='0.3em' fill='white'%3EPumpkin 1Kg%3C/text%3E%3C/svg%3E",
+        name: "Pumpkin",
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23ff8c00'/%3E%3Ctext x='200' y='150' font-family='Arial' font-size='22' font-weight='bold' text-anchor='middle' dy='0.3em' fill='white'%3EPumpkin%3C/text%3E%3C/svg%3E",
         category: "gourd",
         description: "Fresh pumpkin, sweet and nutritious.",
         nutrition: {
@@ -674,10 +288,8 @@ const products = [
     },
     {
         id: 11,
-        name: "Brinjal 500g",
-        price: 42,
-        originalPrice: 50,
-        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%236a0dad'/%3E%3Ctext x='200' y='150' font-family='Arial' font-size='20' font-weight='bold' text-anchor='middle' dy='0.3em' fill='white'%3EBrinjal 500g%3C/text%3E%3C/svg%3E",
+        name: "Brinjal",
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%236a0dad'/%3E%3Ctext x='200' y='150' font-family='Arial' font-size='20' font-weight='bold' text-anchor='middle' dy='0.3em' fill='white'%3EBrinjal%3C/text%3E%3C/svg%3E",
         category: "fruit-vegetable",
         description: "Fresh purple brinjal, perfect for curries.",
         nutrition: {
@@ -698,10 +310,8 @@ const products = [
     },
     {
         id: 13,
-        name: "Carrot 500g",
-        price: 35,
-        originalPrice: 42,
-        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23ff8c00'/%3E%3Ctext x='200' y='150' font-family='Arial' font-size='20' font-weight='bold' text-anchor='middle' dy='0.3em' fill='white'%3ECarrot 500g%3C/text%3E%3C/svg%3E",
+        name: "Carrot",
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23ff8c00'/%3E%3Ctext x='200' y='150' font-family='Arial' font-size='20' font-weight='bold' text-anchor='middle' dy='0.3em' fill='white'%3ECarrot%3C/text%3E%3C/svg%3E",
         category: "root",
         description: "Fresh organic carrots, crisp and sweet, rich in beta-carotene.",
         nutrition: {
@@ -722,10 +332,8 @@ const products = [
     },
     {
         id: 14,
-        name: "Mushroom 250g",
-        price: 85,
-        originalPrice: 95,
-        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23daa520'/%3E%3Ctext x='200' y='150' font-family='Arial' font-size='18' font-weight='bold' text-anchor='middle' dy='0.3em' fill='white'%3EMushroom 250g%3C/text%3E%3C/svg%3E",
+        name: "Mushroom",
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23daa520'/%3E%3Ctext x='200' y='150' font-family='Arial' font-size='18' font-weight='bold' text-anchor='middle' dy='0.3em' fill='white'%3EMushroom%3C/text%3E%3C/svg%3E",
         category: "fungus",
         description: "Fresh button mushrooms, rich in protein and nutrients.",
         nutrition: {
@@ -746,10 +354,8 @@ const products = [
     },
     {
         id: 15,
-        name: "Broccoli 1 Piece",
-        price: 75,
-        originalPrice: 88,
-        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23228b22'/%3E%3Ctext x='200' y='150' font-family='Arial' font-size='18' font-weight='bold' text-anchor='middle' dy='0.3em' fill='white'%3EBroccoli 1 Piece%3C/text%3E%3C/svg%3E",
+        name: "Broccoli",
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23228b22'/%3E%3Ctext x='200' y='150' font-family='Arial' font-size='18' font-weight='bold' text-anchor='middle' dy='0.3em' fill='white'%3EBroccoli%3C/text%3E%3C/svg%3E",
         category: "flower",
         description: "Fresh organic broccoli, superfood packed with vitamins.",
         nutrition: {
@@ -770,10 +376,8 @@ const products = [
     },
     {
         id: 16,
-        name: "Radish 500g",
-        price: 30,
-        originalPrice: 38,
-        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23ffffff'/%3E%3Ctext x='200' y='150' font-family='Arial' font-size='20' font-weight='bold' text-anchor='middle' dy='0.3em' fill='%23333' stroke='%23333' stroke-width='1'%3ERadish 500g%3C/text%3E%3C/svg%3E",
+        name: "Radish",
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23ffffff'/%3E%3Ctext x='200' y='150' font-family='Arial' font-size='20' font-weight='bold' text-anchor='middle' dy='0.3em' fill='%23333' stroke='%23333' stroke-width='1'%3ERadish%3C/text%3E%3C/svg%3E",
         category: "root",
         description: "Fresh white radish, crisp and peppery flavor.",
         nutrition: {
@@ -808,17 +412,6 @@ const mobileSearchInput = document.getElementById('mobile-search-input');
 // Initialize the app
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM loaded, initializing...');
-    
-    // Check and update daily prices first
-    try {
-        checkAndUpdatePrices();
-        console.log('Prices updated successfully');
-    } catch (error) {
-        console.error('Error updating prices:', error);
-    }
-    
-    // Set up automatic price checking every hour
-    setInterval(checkAndUpdatePrices, 60 * 60 * 1000); // Check every hour
     
     // Update timestamp display immediately
     updateTimestampDisplay();
@@ -966,10 +559,13 @@ function createProductCard(product) {
     const div = document.createElement('div');
     div.className = 'vegetable-card bg-white rounded-lg shadow-lg overflow-hidden';
     
+    // Remove weight from name
+    const nameWithoutWeight = product.name.split(' ').slice(0, -1).join(' ');
+    
     div.innerHTML = `
         <div class="relative cursor-pointer" onclick="showVegetableDetails(${product.id})">
             <img src="${product.image}" 
-                 alt="${product.name}" 
+                 alt="${nameWithoutWeight}" 
                  class="w-full h-48 object-cover hover:opacity-90 transition duration-300"
                  loading="lazy">
             <div class="absolute top-2 right-2 bg-green-primary text-white px-2 py-1 rounded-full text-xs">
@@ -980,20 +576,13 @@ function createProductCard(product) {
             </div>
         </div>
         <div class="p-4">
-            <h3 class="text-lg font-semibold mb-2 cursor-pointer hover:text-green-primary transition duration-300" onclick="showVegetableDetails(${product.id})">${product.name}</h3>
+            <h3 class="text-lg font-semibold mb-2 cursor-pointer hover:text-green-primary transition duration-300" onclick="showVegetableDetails(${product.id})">${nameWithoutWeight}</h3>
             <p class="text-gray-600 text-sm mb-3">${product.description}</p>
             <div class="flex justify-between items-center">
                 <div class="flex flex-col">
                     <div class="flex items-center space-x-2" id="price-display-${product.id}">
-                        <span class="text-2xl font-bold text-green-primary">₹${product.price}</span>
-                        ${product.originalPrice ? `<span class="text-lg text-gray-400 line-through">₹${product.originalPrice}</span>` : ''}
+                        <span class="text-lg text-gray-500 font-medium">Visit store for price</span>
                     </div>
-                    ${product.originalPrice ? `<span class="text-xs text-green-600 font-medium">Save ₹${product.originalPrice - product.price}</span>` : ''}
-                    ${product.wholesalePrice && localStorage.getItem('showWholesalePrices') === 'true' ? 
-                        `<div class="text-xs text-blue-600 mt-1">
-                            <div>Wholesale: ₹${product.wholesalePrice}</div>
-                            <div>Profit: ₹${product.profit}</div>
-                         </div>` : ''}
                 </div>
                 <div class="text-right">
                     <div class="text-sm text-green-600 font-medium mb-1">
@@ -1312,18 +901,18 @@ function showVegetableDetails(productId) {
         return;
     }
     
-    const isAdmin = localStorage.getItem('isAdmin') === 'true';
-    const hideRates = localStorage.getItem('hideRates') === 'true';
+    // Get name without weight
+    const nameWithoutWeight = product.name.split(' ').slice(0, -1).join(' ');
     
     // Build content HTML
     let contentHTML = `
         <div class="flex justify-between items-start mb-4">
-            <h2 class="text-2xl font-bold text-gray-800">${product.name}</h2>
+            <h2 class="text-2xl font-bold text-gray-800">${nameWithoutWeight}</h2>
             <button id="close-vegetable-modal" class="text-gray-500 hover:text-gray-700 text-3xl font-bold leading-none">&times;</button>
         </div>
         <div class="grid md:grid-cols-2 gap-6">
             <div>
-                <img src="${product.image}" alt="${product.name}" class="w-full h-64 object-cover rounded-lg mb-4">
+                <img src="${product.image}" alt="${nameWithoutWeight}" class="w-full h-64 object-cover rounded-lg mb-4">
             </div>
             <div class="space-y-4">
                 <div>
@@ -1333,31 +922,11 @@ function showVegetableDetails(productId) {
                 <div>
                     <h3 class="font-semibold text-gray-700">Description</h3>
                     <p class="text-gray-600">${product.description}</p>
-                </div>`;
-    
-    if (!hideRates) {
-        contentHTML += `
+                </div>
                 <div>
-                    <h3 class="font-semibold text-gray-700">Price per KG</h3>
-                    <p class="text-2xl font-bold text-green-primary">₹${product.price}</p>
-                </div>`;
-                
-        if (isAdmin) {
-            contentHTML += `
-                <div class="bg-red-50 border border-red-200 rounded-lg p-3">
-                    <h4 class="font-semibold text-red-800 mb-2">Cost Breakdown (Admin)</h4>
-                    <div class="text-sm text-red-700">
-                        <p>Wholesale Cost: ₹${product.cost || product.wholesalePrice || 'N/A'}</p>
-                        <p>Transport: ₹${product.transport || 'N/A'}</p>
-                        <p>Total Cost: ₹${(product.cost || product.wholesalePrice || 0) + (product.transport || 0)}</p>
-                        <p>Profit: ₹${product.profit || (product.price - ((product.cost || product.wholesalePrice || 0) + (product.transport || 0)))}</p>
-                        <p>Profit Margin: ${product.profit ? ((product.profit / product.price) * 100).toFixed(1) : 'N/A'}%</p>
-                    </div>
-                </div>`;
-        }
-    }
-    
-    contentHTML += `
+                    <h3 class="font-semibold text-gray-700">Price Information</h3>
+                    <p class="text-lg text-gray-600">Please visit our store for current prices</p>
+                </div>
             </div>
         </div>`;
     
